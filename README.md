@@ -3,8 +3,6 @@ A little program for transcribing videos
 
 ## Setup
 
-# Setup
-
 Using Python3+:
 
 ```bash
