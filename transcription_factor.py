@@ -2,6 +2,12 @@ import os
 import json
 import argparse
 import time
+import warnings
+
+# Suppress all warnings including pkg_resources deprecation
+warnings.filterwarnings("ignore", category=UserWarning)
+warnings.filterwarnings("ignore", category=DeprecationWarning)
+
 from faster_whisper import WhisperModel
 
 # --- Configuration file path ---
