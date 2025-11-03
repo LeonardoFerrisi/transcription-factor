@@ -149,17 +149,34 @@ Examples:
   python transcription_factor.py --model small.en
   python transcription_factor.py --filetypes .mp4 .mkv .avi
   python transcription_factor.py --input ./videos --filetypes .mkv
+
+Arguments:
+  --input       Specify the folder containing video files to transcribe
+  --output      Specify where to save the generated SRT subtitle files
+  --model       Choose Whisper model: tiny.en, base.en, small.en, medium.en, large-v3
+  --filetypes   Specify video file extensions to process (e.g., .mp4 .mkv .avi)
+  --beam-size   Set beam size for transcription quality (higher = better but slower)
+  --device      Choose processing device: auto (default), cuda (GPU), or cpu
+  --help        Show this help message and exit
+
+Note: Running without arguments will use settings from settings.conf or defaults.
         """
     )
     
-    parser.add_argument("--input", type=str, help="Input folder containing video files")
-    parser.add_argument("--output", type=str, help="Output folder for SRT files")
-    parser.add_argument("--model", type=str, help="Whisper model size (tiny.en, base.en, small.en, medium.en, large-v3)")
-    parser.add_argument("--filetypes", nargs="+", type=str, help="Video file types to process (e.g., .mp4 .mkv .avi)")
-    parser.add_argument("--beam-size", type=int, help="Beam size for transcription (default: 5)")
-    parser.add_argument("--device", type=str, choices=["auto", "cuda", "cpu"], help="Device to use (auto, cuda, cpu)")
+    parser.add_argument("--input", type=str, help="Input folder containing video files (default: current directory)")
+    parser.add_argument("--output", type=str, help="Output folder for SRT files (default: current directory)")
+    parser.add_argument("--model", type=str, help="Whisper model size: tiny.en, base.en, small.en, medium.en, large-v3 (default: base.en)")
+    parser.add_argument("--filetypes", nargs="+", type=str, help="Video file types to process, e.g., .mp4 .mkv .avi (default: .mp4 .mkv)")
+    parser.add_argument("--beam-size", type=int, help="Beam size for transcription quality, higher values improve accuracy but are slower (default: 5)")
+    parser.add_argument("--device", type=str, choices=["auto", "cuda", "cpu"], help="Processing device: 'auto' detects GPU, 'cuda' forces GPU, 'cpu' forces CPU (default: auto)")
     
     args = parser.parse_args()
+    
+    # If no arguments provided, show helpful message
+    if len(vars(args)) == 6 and all(v is None for v in vars(args).values()):
+        print("\n💡 Tip: Running with default settings from settings.conf")
+        print("   Use --help to see all available options")
+        print("   Example: python transcription_factor.py --help\n")
     
     # Load existing config
     config = load_config()
@@ -177,6 +194,8 @@ Examples:
         config["beam_size"] = args.beam_size
     if args.device:
         config["device"] = args.device
+
+    
     
     # Save updated config
     save_config(config)
